@@ -56,20 +56,30 @@ function pad(value: number): string {
   return value.toString().padStart(2, "0")
 }
 
+/** Zero-padded UTC wall time, e.g. "04:00 UTC". */
+export function formatUTCClock(date: Date): string {
+  return `${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())} UTC`
+}
+
 /**
  * Human countdown: "45s" | "1m 05s" | "42m" | "5h 12m" | "2d 1h".
- * Seconds appear under 10 minutes so the chip can tick.
+ * With showSeconds, anything under 10 minutes renders "m m s s" so the chip
+ * can tick; otherwise it stays at minute granularity, rounding up so it
+ * never claims "0m". Days only replace hours once strictly beyond 48h.
  */
-export function formatDistance(ms: number): string {
+export function formatDistance(ms: number, showSeconds: boolean = false): string {
   const total = Math.max(0, Math.floor(ms / 1000))
   const days = Math.floor(total / 86_400)
   const dayHours = Math.floor((total % 86_400) / 3_600)
   const hours = Math.floor(total / 3_600)
   const minutes = Math.floor((total % 3_600) / 60)
   const seconds = total % 60
-  if (total >= 48 * 3_600) return dayHours === 0 ? `${days}d` : `${days}d ${dayHours}h`
+  if (total > 48 * 3_600) return dayHours === 0 ? `${days}d` : `${days}d ${dayHours}h`
   if (total >= 3_600) return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`
   if (total >= 600) return `${minutes}m`
-  if (total >= 60) return `${minutes}m ${pad(seconds)}s`
-  return `${seconds}s`
+  if (showSeconds) {
+    if (total >= 60) return `${minutes}m ${pad(seconds)}s`
+    return `${seconds}s`
+  }
+  return `${Math.max(1, Math.ceil(total / 60))}m`
 }
