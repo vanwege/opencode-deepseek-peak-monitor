@@ -32,15 +32,15 @@ official UTC weekday rule.
 ## Install
 
 ```sh
-npm install            # dev deps only; the plugin itself loads from source
+opencode plugin add github:vanwege/opencode-deepseek-peak-monitor
 ```
 
-Register it in your **global** `~/.config/opencode/cli.json` (TUI-only
-packages belong there, not in `opencode.json`):
+This installs the package from GitHub and registers it in your **global**
+`~/.config/opencode/cli.json`, which is where a TUI-only plugin belongs:
 
 ```jsonc
 {
-  "plugins": ["/absolute/path/to/opencode-deepseek-peak"]
+  "plugins": ["github:vanwege/opencode-deepseek-peak-monitor"]
 }
 ```
 
@@ -49,6 +49,7 @@ The TUI watches `cli.json`; run `/reload` (or start a new TUI) to load it.
 ## Development
 
 ```sh
+npm install     # dev deps only; the plugin itself loads from source
 npm test        # node --test on the pure schedule logic (test/windows.test.ts)
 npm run typecheck
 ```
@@ -56,3 +57,16 @@ npm run typecheck
 `src/windows.ts` is dependency-free (peak windows, boundary search, countdown
 formatting); `src/tui.tsx` is the plugin: it claims the `prompt.footer.status`
 slot and reads the selected model via `context.ui.model.current()`.
+
+## Placement limitation
+
+No published slot reaches the prompt's model line, so the chip sits in the
+footer row instead of beside the model selector. Every published slot path
+(`app`, `home.footer`, `prompt.footer*`, `session.composer.top`, `sidebar.*`,
+`session.panel`) lands elsewhere; upvote
+[anomalyco/opencode#61390](https://github.com/anomalyco/opencode/issues/61390)
+to ask OpenCode for a slot on the model row itself.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
