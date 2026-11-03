@@ -2,6 +2,11 @@
   "name": "opencode-deepseek-peak",
   "version": "0.1.0",
   "description": "DeepSeek peak/off-peak pricing countdown chip for the OpenCode TUI prompt footer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanwege/opencode-deepseek-peak-monitor.git"
+  },
+  "homepage": "https://github.com/vanwege/opencode-deepseek-peak-monitor",
   "type": "module",
   "license": "MIT",
   "exports": {
