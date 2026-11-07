@@ -8,8 +8,10 @@ While a model from the **official `deepseek` provider** is selected:
 
 - **Peak window** — `⚡ peak 2h 31m left` in **red-orange** (`#FF4500`).
   Ticks in seconds (`⚡ peak 9m 59s left`) during the final 10 minutes.
-- **Off-peak** — `⏳ peak in 5h 12m` in **green** (`#3FB950`), abbreviated to
-  `⏳ peak in 2d 13h` once the next peak is more than 48h out.
+- **Off-peak** — `⏳ peak in 5h 12m` in **green** (`#3FB950`). The countdown
+  leads with its largest unit and shows at most two, rounding the lower unit
+  to nearest: `1d 16h`, `2d 15h`, and — if holiday gaps ever push the next
+  peak past a week — `1w 3d`.
 - When peak **starts** while a DeepSeek model is selected, a warning toast
   reports when it ends (e.g. `ends 04:00 UTC`).
 

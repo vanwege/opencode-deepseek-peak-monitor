@@ -92,9 +92,11 @@ test("formatDistance: minute-ticking buckets", () => {
   assert.equal(formatDistance(0), "1m")
   assert.equal(formatDistance(45_000), "1m")
   assert.equal(formatDistance(60 * 60_000 - 1_000), "59m")
+  assert.equal(formatDistance(59 * 60_000 + 40_000), "59m")
   assert.equal(formatDistance(2 * 3_600_000), "2h")
   assert.equal(formatDistance(5 * 3_600_000 + 12 * 60_000), "5h 12m")
-  assert.equal(formatDistance(48 * 3_600_000), "48h")
+  assert.equal(formatDistance(24 * 3_600_000), "1d")
+  assert.equal(formatDistance(48 * 3_600_000), "2d")
   assert.equal(formatDistance(48 * 3_600_000 + 60_000), "2d")
   assert.equal(formatDistance(49 * 3_600_000), "2d 1h")
 })
@@ -114,6 +116,30 @@ test("formatUTCClock: zero-padded UTC wall time", () => {
   assert.equal(formatUTCClock(T("2026-11-06T10:30:00Z")), "10:30 UTC")
 })
 
-test("formatDistance: just below the 48h day threshold stays hourly", () => {
-  assert.equal(formatDistance(47 * 3_600_000 + 59 * 60_000), "47h 59m")
+test("formatDistance: leads with the largest unit, at most two units", () => {
+  const H = 3_600_000
+  assert.equal(formatDistance(39 * H + 48 * 60_000), "1d 16h")
+  assert.equal(formatDistance(24 * H), "1d")
+  assert.equal(formatDistance(24 * H + 30 * 60_000), "1d 1h")
+  assert.equal(formatDistance(25 * H + 29 * 60_000), "1d 1h")
+  assert.equal(formatDistance(2 * 24 * H + 15 * H), "2d 15h")
+  assert.equal(formatDistance(2 * H + 12 * 60_000 + 40_000), "2h 13m")
+  assert.equal(formatDistance(5 * H + 12 * 60_000 + 40_000), "5h 13m")
+  assert.equal(formatDistance(5 * H + 12 * 60_000 + 29_000), "5h 12m")
+})
+
+test("formatDistance: nearest rounding carries into the larger unit", () => {
+  const H = 3_600_000
+  assert.equal(formatDistance(23 * H + 59 * 60_000 + 40_000), "1d")
+  assert.equal(formatDistance(47 * H + 59 * 60_000), "2d")
+  assert.equal(formatDistance(1 * 24 * H + 23 * H + 40 * 60_000), "2d")
+  assert.equal(formatDistance(6 * 24 * H + 23 * H + 40 * 60_000), "1w")
+})
+
+test("formatDistance: weeks are the largest unit", () => {
+  const H = 3_600_000
+  assert.equal(formatDistance(7 * 24 * H), "1w")
+  assert.equal(formatDistance(10 * 24 * H + 5 * H), "1w 3d")
+  assert.equal(formatDistance(13 * 24 * H), "1w 6d")
+  assert.equal(formatDistance(1 * 7 * 24 * H + 6 * 24 * H + 23 * H + 40 * 60_000), "2w")
 })
